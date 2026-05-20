@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import JobCard from '@/components/JobCard';
@@ -7,6 +8,14 @@ import Sidebar from '@/components/Sidebar';
 import { getJobs, getCategories, getDesignations, getStates } from '@/lib/data';
 
 export default function JobsPage() {
+  return (
+    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-500">Loading jobs...</div>}>
+      <JobsContent />
+    </Suspense>
+  );
+}
+
+function JobsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
