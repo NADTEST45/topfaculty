@@ -39,9 +39,9 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-gray-500 text-xs">
           <p>© 2026 TopFaculty.com. All rights reserved.</p>
           <div className="flex gap-4 mt-2 md:mt-0">
-            <Link href="/about" className="hover:text-white">Privacy Policy</Link>
-            <Link href="/about" className="hover:text-white">Terms</Link>
-            <Link href="/about" className="hover:text-white">Disclaimer</Link>
+            <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-white">Terms</Link>
+            <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
             <a href={`mailto:${siteConfig.email}`} className="hover:text-white">Support</a>
           </div>
         </div>

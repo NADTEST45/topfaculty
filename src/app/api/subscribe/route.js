@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateSubscriber } from '@/lib/validation';
 import { upsertSubscriber } from '@/lib/backend';
+import { welcomeSubscriber } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -14,6 +15,7 @@ export async function POST(request) {
     }
 
     const subscriber = await upsertSubscriber(validation.data);
+    await welcomeSubscriber(validation.data.email);
 
     return NextResponse.json({
       success: true,

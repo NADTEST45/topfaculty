@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateContactMessage } from '@/lib/validation';
 import { createContactMessage } from '@/lib/backend';
+import { notifyContactMessage } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -14,6 +15,7 @@ export async function POST(request) {
     }
 
     const message = await createContactMessage(validation.data);
+    await notifyContactMessage(validation.data);
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateJobSubmission } from '@/lib/validation';
 import { createJobSubmission, deleteJob, getJobById, listJobs, updateJobStatus } from '@/lib/backend';
+import { notifyJobSubmission } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -40,6 +41,7 @@ export async function POST(request) {
     }
 
     const job = await createJobSubmission(validation.data);
+    await notifyJobSubmission(job);
 
     return NextResponse.json({
       success: true,

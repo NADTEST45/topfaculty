@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createCandidateProfile, getAdminSummary } from '@/lib/backend';
 import { validateCandidateProfile } from '@/lib/validation';
+import { notifyCandidateSignup } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,7 @@ export async function POST(request) {
     }
 
     const candidate = await createCandidateProfile(validation.data);
+    await notifyCandidateSignup(candidate);
 
     return NextResponse.json({
       success: true,

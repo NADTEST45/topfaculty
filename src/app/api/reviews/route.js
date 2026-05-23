@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createReview, getAdminSummary } from '@/lib/backend';
 import { validateReview } from '@/lib/validation';
+import { notifyReview } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,7 @@ export async function POST(request) {
     }
 
     const review = await createReview(validation.data);
+    await notifyReview(review);
 
     return NextResponse.json({
       success: true,

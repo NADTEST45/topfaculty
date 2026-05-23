@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createCollegeProfile, getAdminSummary } from '@/lib/backend';
 import { validateCollegeProfile } from '@/lib/validation';
+import { notifyCollegeSignup } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,7 @@ export async function POST(request) {
     }
 
     const college = await createCollegeProfile(validation.data);
+    await notifyCollegeSignup(college);
 
     return NextResponse.json({
       success: true,
