@@ -9,6 +9,8 @@ export default function NewJobPage() {
   const [designations, setDesignations] = useState([]);
   const [states, setStates] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const [form, setForm] = useState({
     title: '',
@@ -44,10 +46,32 @@ export default function NewJobPage() {
     }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const firstError = result.errors ? Object.values(result.errors)[0] : result.error;
+        throw new Error(firstError || 'Unable to submit this job right now.');
+      }
+
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -72,9 +96,9 @@ export default function NewJobPage() {
         {submitted && (
           <div className="mb-6 bg-green-50 border border-green-300 text-green-800 rounded-xl px-6 py-4 flex items-center justify-between">
             <div>
-              <p className="font-semibold">Job posted successfully!</p>
+              <p className="font-semibold">Job submitted for review!</p>
               <p className="text-sm mt-0.5">
-                &ldquo;{form.title || 'Untitled Job'}&rdquo; has been saved.
+                &ldquo;{form.title || 'Untitled Job'}&rdquo; has been received and is ready for verification.
               </p>
             </div>
             <div className="flex gap-3">
@@ -99,6 +123,12 @@ export default function NewJobPage() {
                 Back to Dashboard
               </Link>
             </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-6 py-4 text-sm font-medium text-red-700">
+            {error}
           </div>
         )}
 
@@ -432,9 +462,10 @@ export default function NewJobPage() {
             </Link>
             <button
               type="submit"
+              disabled={submitting}
               className="px-6 py-2.5 text-sm font-semibold text-white bg-accent-500 hover:bg-accent-600 rounded-lg shadow transition"
             >
-              Post Job
+              {submitting ? 'Submitting...' : 'Submit for Review'}
             </button>
           </div>
         </form>

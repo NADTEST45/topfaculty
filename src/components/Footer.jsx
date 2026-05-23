@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import NewsletterForm from './NewsletterForm';
+import { siteConfig } from '@/lib/site';
+
 export default function Footer() {
   return (
     <footer className="bg-navy-900 text-white mt-12">
@@ -30,7 +33,7 @@ export default function Footer() {
             <Link href="/fdp" className="block text-gray-400 text-sm py-1 hover:text-white">FDPs & Conferences</Link>
             <Link href="/admin" className="block text-gray-400 text-sm py-1 hover:text-white">Post Recruitment</Link>
             <h3 className="font-semibold mt-4 mb-2 text-accent-500">Stay Updated</h3>
-            <form className="flex"><input placeholder="Email address" className="px-3 py-2 rounded-l text-sm text-gray-800 flex-1 min-w-0" /><button className="bg-accent-500 text-white px-3 py-2 rounded-r text-sm font-medium hover:bg-accent-600">Subscribe</button></form>
+            <NewsletterForm compact />
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-gray-500 text-xs">
@@ -39,6 +42,7 @@ export default function Footer() {
             <Link href="/about" className="hover:text-white">Privacy Policy</Link>
             <Link href="/about" className="hover:text-white">Terms</Link>
             <Link href="/about" className="hover:text-white">Disclaimer</Link>
+            <a href={`mailto:${siteConfig.email}`} className="hover:text-white">Support</a>
           </div>
         </div>
       </div>

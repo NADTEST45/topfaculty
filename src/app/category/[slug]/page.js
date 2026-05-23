@@ -3,8 +3,31 @@ import JobCard from '@/components/JobCard';
 import Sidebar from '@/components/Sidebar';
 import { getJobs, getCategories } from '@/lib/data';
 
-export default function CategoryPage({ params }) {
-  const { slug } = params;
+export function generateStaticParams() {
+  return getCategories().map((category) => ({ slug: category.slug }));
+}
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const category = getCategories().find((item) => item.slug === slug);
+
+  if (!category) {
+    return {
+      title: 'Category Not Found',
+    };
+  }
+
+  return {
+    title: `${category.name} Faculty Jobs`,
+    description: `Browse ${category.name} academic, teaching, and research jobs across India on TopFaculty.`,
+    alternates: {
+      canonical: `/category/${category.slug}`,
+    },
+  };
+}
+
+export default async function CategoryPage({ params }) {
+  const { slug } = await params;
   const categories = getCategories();
   const category = categories.find((c) => c.slug === slug);
   const jobs = getJobs({ category: slug });

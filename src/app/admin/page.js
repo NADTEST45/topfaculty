@@ -1,149 +1,209 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getJobs, getCategories, getFdpEvents } from '@/lib/data';
+
+const statCards = [
+  ['totalJobs', 'Total Jobs', 'bg-navy-700'],
+  ['pendingJobs', 'Pending Jobs', 'bg-accent-500'],
+  ['candidates', 'Candidates', 'bg-navy-500'],
+  ['colleges', 'Colleges', 'bg-navy-600'],
+  ['serviceRequests', 'Service Leads', 'bg-accent-600'],
+  ['reviews', 'Reviews', 'bg-navy-800'],
+  ['subscribers', 'Subscribers', 'bg-green-600'],
+  ['messages', 'Messages', 'bg-slate-700'],
+];
 
 export default function AdminDashboard() {
-  const [jobs, setJobs] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [fdpEvents, setFdpEvents] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  async function loadSummary() {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/admin/summary', { cache: 'no-store' });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Unable to load dashboard.');
+      }
+
+      setSummary(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateJob(id, status) {
+    try {
+      const response = await fetch(`/api/jobs?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Unable to update job.');
+      }
+
+      await loadSummary();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   useEffect(() => {
-    setJobs(getJobs());
-    setCategories(getCategories());
-    setFdpEvents(getFdpEvents());
+    loadSummary();
   }, []);
 
-  const walkInCount = jobs.filter((j) => j.type === 'walk-in').length;
-  const featuredCount = jobs.filter((j) => j.featured).length;
-
-  const stats = [
-    { label: 'Total Jobs', value: jobs.length, icon: '📋', bg: 'bg-navy-700' },
-    { label: 'Walk-in Jobs', value: walkInCount, icon: '🚶', bg: 'bg-navy-500' },
-    { label: 'Featured Jobs', value: featuredCount, icon: '⭐', bg: 'bg-accent-500' },
-    { label: 'Categories', value: categories.length, icon: '📂', bg: 'bg-navy-600' },
-    { label: 'FDP Events', value: fdpEvents.length, icon: '🎓', bg: 'bg-accent-600' },
-  ];
+  const jobs = summary?.jobs || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-navy-700 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
           <div>
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-            <p className="text-navy-100 text-sm mt-1">TopFaculty Management Panel</p>
+            <p className="mt-1 text-sm text-navy-100">SQLite test backend control panel</p>
           </div>
-          <Link
-            href="/"
-            className="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition"
-          >
+          <Link href="/" className="rounded-lg bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20">
             View Site
           </Link>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className={`${stat.bg} text-white rounded-xl p-5 shadow-md`}
-            >
-              <div className="text-2xl mb-1">{stat.icon}</div>
-              <p className="text-3xl font-bold">{stat.value}</p>
-              <p className="text-sm opacity-90 mt-1">{stat.label}</p>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700">
+            {error}
+          </div>
+        )}
+
+        {loading && (
+          <div className="rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">
+            Loading backend data...
+          </div>
+        )}
+
+        {summary && (
+          <>
+            <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
+              {statCards.map(([key, label, bg]) => (
+                <div key={key} className={`${bg} rounded-xl p-4 text-white shadow-md`}>
+                  <p className="text-3xl font-black">{summary.stats[key] ?? 0}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-wide opacity-90">{label}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <Link
-            href="/admin/jobs/new"
-            className="bg-accent-500 hover:bg-accent-600 text-white font-semibold px-5 py-2.5 rounded-lg shadow transition"
-          >
-            + Post New Job
-          </Link>
-          <button className="bg-navy-700 hover:bg-navy-800 text-white font-semibold px-5 py-2.5 rounded-lg shadow transition">
-            Manage FDPs
-          </button>
-          <button className="border border-navy-700 text-navy-700 hover:bg-navy-700 hover:text-white font-semibold px-5 py-2.5 rounded-lg transition">
-            View Analytics
-          </button>
-        </div>
+            <div className="mb-8 flex flex-wrap gap-3">
+              <Link href="/admin/jobs/new" className="rounded-lg bg-accent-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-accent-600">
+                + Post New Job
+              </Link>
+              <Link href="/register/college" className="rounded-lg bg-navy-700 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-navy-800">
+                Register College
+              </Link>
+              <Link href="/register/candidate" className="rounded-lg border border-navy-700 px-5 py-2.5 text-sm font-semibold text-navy-700 transition hover:bg-navy-700 hover:text-white">
+                Add Candidate
+              </Link>
+            </div>
 
-        {/* Recent Jobs Table */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-800">Recent Jobs</h2>
-            <span className="text-sm text-gray-500">{jobs.length} total</span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 text-left text-gray-600 uppercase text-xs tracking-wider">
-                  <th className="px-6 py-3">ID</th>
-                  <th className="px-6 py-3">Title</th>
-                  <th className="px-6 py-3">Institution</th>
-                  <th className="px-6 py-3">Category</th>
-                  <th className="px-6 py-3">Type</th>
-                  <th className="px-6 py-3">Deadline</th>
-                  <th className="px-6 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {jobs.map((job) => {
-                  const cat = categories.find((c) => c.slug === job.category);
-                  return (
-                    <tr key={job.id} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-3 text-gray-500 font-mono">#{job.id}</td>
-                      <td className="px-6 py-3 font-medium text-gray-800 max-w-xs truncate">
-                        {job.title}
-                        {job.featured && (
-                          <span className="ml-2 inline-block bg-accent-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">
-                            Featured
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-3 text-gray-600">{job.institution}</td>
-                      <td className="px-6 py-3">
-                        <span className="bg-navy-50 text-navy-700 text-xs font-medium px-2 py-1 rounded">
-                          {cat ? cat.name : job.category}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3">
-                        <span
-                          className={`text-xs font-semibold px-2 py-1 rounded ${
-                            job.type === 'walk-in'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-blue-100 text-blue-700'
-                          }`}
-                        >
-                          {job.type === 'walk-in' ? 'Walk-in' : 'Regular'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-gray-600">{job.deadline}</td>
-                      <td className="px-6 py-3">
-                        <div className="flex gap-2">
-                          <button className="text-navy-500 hover:text-navy-700 font-medium transition">
-                            Edit
-                          </button>
-                          <button className="text-red-400 hover:text-red-600 font-medium transition">
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+            <section className="mb-8 overflow-hidden rounded-xl bg-white shadow-md">
+              <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">Jobs Queue</h2>
+                  <p className="text-xs text-gray-500">Pending submissions can be published for the public site.</p>
+                </div>
+                <button onClick={loadSummary} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50">
+                  Refresh
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50 text-left text-xs uppercase tracking-wider text-gray-600">
+                      <th className="px-6 py-3">ID</th>
+                      <th className="px-6 py-3">Title</th>
+                      <th className="px-6 py-3">Institution</th>
+                      <th className="px-6 py-3">Status</th>
+                      <th className="px-6 py-3">Deadline</th>
+                      <th className="px-6 py-3">Actions</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {jobs.map((job) => (
+                      <tr key={job.id} className="transition hover:bg-gray-50">
+                        <td className="px-6 py-3 font-mono text-gray-500">#{job.id}</td>
+                        <td className="max-w-xs truncate px-6 py-3 font-medium text-gray-800">
+                          {job.title}
+                          {job.featured && <span className="ml-2 rounded bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">Featured</span>}
+                        </td>
+                        <td className="px-6 py-3 text-gray-600">{job.institution}</td>
+                        <td className="px-6 py-3">
+                          <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${job.status === 'published' ? 'bg-green-100 text-green-700' : job.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
+                            {job.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-gray-600">{job.deadline}</td>
+                        <td className="px-6 py-3">
+                          <div className="flex gap-2">
+                            {job.status !== 'published' && (
+                              <button onClick={() => updateJob(job.id, 'published')} className="font-medium text-green-600 hover:text-green-700">
+                                Publish
+                              </button>
+                            )}
+                            {job.status !== 'archived' && (
+                              <button onClick={() => updateJob(job.id, 'archived')} className="font-medium text-red-500 hover:text-red-600">
+                                Archive
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <SummaryList title="Recent Candidates" rows={summary.recentCandidates} columns={['name', 'email', 'status']} />
+              <SummaryList title="Recent Colleges" rows={summary.recentColleges} columns={['college_name', 'email', 'status']} />
+              <SummaryList title="Recent Reviews" rows={summary.recentReviews} columns={['institution', 'relation', 'status']} />
+              <SummaryList title="Service Requests" rows={summary.recentServiceRequests} columns={['service_type', 'institution', 'status']} />
+            </div>
+          </>
+        )}
       </main>
     </div>
+  );
+}
+
+function SummaryList({ title, rows, columns }) {
+  return (
+    <section className="overflow-hidden rounded-xl bg-white shadow-sm">
+      <div className="border-b border-gray-100 px-5 py-4">
+        <h2 className="font-bold text-navy-900">{title}</h2>
+      </div>
+      <div className="divide-y divide-gray-100">
+        {rows.length === 0 ? (
+          <p className="px-5 py-5 text-sm text-gray-500">No records yet.</p>
+        ) : rows.map((row) => (
+          <div key={row.id} className="grid grid-cols-3 gap-3 px-5 py-3 text-sm">
+            {columns.map((column) => (
+              <span key={column} className="truncate text-gray-700">
+                {row[column] || '-'}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

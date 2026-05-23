@@ -1,11 +1,12 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import JobCard from '@/components/JobCard';
 import Sidebar from '@/components/Sidebar';
-import { getJobs, getCategories, getDesignations, getStates } from '@/lib/data';
+import { getCategories, getDesignations, getStates } from '@/lib/data';
+import { getJobFilterSummary } from '@/lib/jobUtils';
 
 export default function JobsPage() {
   return (
@@ -23,19 +24,24 @@ function JobsContent() {
   const designation = searchParams.get('designation') || '';
   const state = searchParams.get('state') || '';
   const type = searchParams.get('type') || '';
+  const q = searchParams.get('q') || '';
+  const sort = searchParams.get('sort') || 'newest';
 
   const filters = {};
   if (category) filters.category = category;
   if (designation) filters.designation = designation;
   if (state) filters.state = state;
   if (type) filters.type = type;
+  if (q) filters.search = q;
 
-  const jobs = getJobs(filters);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const categories = getCategories();
   const designations = getDesignations();
   const states = getStates();
 
-  const hasFilters = category || designation || state || type;
+  const hasFilters = category || designation || state || type || q || sort !== 'newest';
 
   function handleFilterChange(key, value) {
     const params = new URLSearchParams(searchParams.toString());
@@ -44,12 +50,54 @@ function JobsContent() {
     } else {
       params.delete(key);
     }
-    router.push(`/jobs?${params.toString()}`);
+    router.push(params.toString() ? `/jobs?${params.toString()}` : '/jobs');
   }
 
   function clearFilters() {
     router.push('/jobs');
   }
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (designation) params.set('designation', designation);
+    if (state) params.set('state', state);
+    if (type) params.set('type', type);
+    if (q) params.set('search', q);
+    if (sort) params.set('sort', sort);
+
+    async function loadJobs() {
+      setLoading(true);
+      setLoadError('');
+
+      try {
+        const response = await fetch(`/api/jobs?${params.toString()}`, {
+          signal: controller.signal,
+          cache: 'no-store',
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Unable to load jobs.');
+        }
+
+        setJobs(result.jobs);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setLoadError(err.message);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadJobs();
+
+    return () => controller.abort();
+  }, [category, designation, state, type, q, sort]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -61,18 +109,27 @@ function JobsContent() {
       </nav>
 
       {/* Page Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-navy-800">All Faculty Jobs</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Browse the latest teaching and academic positions across India
+      <div className="mb-6 rounded-3xl bg-gradient-to-r from-navy-900 to-navy-700 p-6 text-white">
+        <h1 className="text-3xl font-black">All Faculty Jobs</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-navy-100">
+          Browse verified teaching, research, leadership, and walk-in opportunities across India.
         </p>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-end">
+      <div className="mb-6 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-6">
+          <div className="lg:col-span-2">
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Keyword</label>
+            <input
+              value={q}
+              onChange={(e) => handleFilterChange('q', e.target.value)}
+              placeholder="Title, institution, city..."
+              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent"
+            />
+          </div>
           {/* Category */}
-          <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[160px]">
+          <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Category</label>
             <select
               value={category}
@@ -89,7 +146,7 @@ function JobsContent() {
           </div>
 
           {/* Designation */}
-          <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[160px]">
+          <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Designation</label>
             <select
               value={designation}
@@ -104,7 +161,7 @@ function JobsContent() {
           </div>
 
           {/* State */}
-          <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[160px]">
+          <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">State</label>
             <select
               value={state}
@@ -119,7 +176,7 @@ function JobsContent() {
           </div>
 
           {/* Type */}
-          <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[140px]">
+          <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Type</label>
             <select
               value={type}
@@ -132,16 +189,30 @@ function JobsContent() {
             </select>
           </div>
 
-          {/* Clear Filters */}
-          {hasFilters && (
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Sort</label>
+            <select
+              value={sort}
+              onChange={(e) => handleFilterChange('sort', e.target.value)}
+              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent"
+            >
+              <option value="newest">Newest first</option>
+              <option value="deadline">Deadline soon</option>
+              <option value="featured">Featured first</option>
+            </select>
+          </div>
+        </div>
+        {hasFilters && (
+          <div className="mt-4 flex items-center justify-between rounded-xl bg-gray-50 px-3 py-2">
+            <p className="text-xs font-medium text-gray-500">Filtered by {getJobFilterSummary(filters)}</p>
             <button
               onClick={clearFilters}
-              className="text-sm text-red-500 hover:text-red-700 font-medium whitespace-nowrap py-2 sm:pb-2"
+              className="text-sm font-bold text-red-500 hover:text-red-700"
             >
-              Clear Filters
+              Clear
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
@@ -157,7 +228,17 @@ function JobsContent() {
             </p>
           </div>
 
-          {jobs.length > 0 ? (
+          {loadError && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              {loadError}
+            </div>
+          )}
+
+          {loading ? (
+            <div className="rounded-lg bg-white p-12 text-center text-sm text-gray-500 shadow">
+              Loading jobs from test backend...
+            </div>
+          ) : jobs.length > 0 ? (
             <div className="space-y-3">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />

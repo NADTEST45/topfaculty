@@ -2,15 +2,51 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JobCard from '@/components/JobCard';
 import { getJob, getJobs } from '@/lib/data';
+import { getJobById, listJobs } from '@/lib/backend';
+import { absoluteUrl, siteConfig } from '@/lib/site';
+import { formatDate, getDeadlineStatus, normalizeJobType } from '@/lib/jobUtils';
 
-export default function JobDetailPage({ params }) {
-  const job = getJob(params.id);
+export function generateStaticParams() {
+  return getJobs().map((job) => ({ id: String(job.id) }));
+}
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const job = (await getJobById(id)) || getJob(id);
+
+  if (!job) {
+    return {
+      title: 'Job Not Found',
+    };
+  }
+
+  const title = `${job.title} at ${job.institution}`;
+  const description = `${job.designation} opportunity in ${job.city}, ${job.state}. ${job.salary}. Apply by ${formatDate(job.deadline)}.`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/jobs/${job.id}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: absoluteUrl(`/jobs/${job.id}`),
+      type: 'article',
+    },
+  };
+}
+
+export default async function JobDetailPage({ params }) {
+  const { id } = await params;
+  const job = (await getJobById(id)) || getJob(id);
 
   if (!job) {
     notFound();
   }
 
-  const relatedJobs = getJobs({ category: job.category })
+  const relatedJobs = (await listJobs({ category: job.category }))
     .filter((j) => j.id !== job.id)
     .slice(0, 3);
 
@@ -31,9 +67,48 @@ export default function JobDetailPage({ params }) {
     new Date(job.deadline) > new Date();
 
   const isExpired = new Date(job.deadline) < new Date();
+  const deadline = getDeadlineStatus(job.deadline);
+  const institutionUrl = job.contact.website
+    ? job.contact.website.startsWith('http')
+      ? job.contact.website
+      : `https://${job.contact.website}`
+    : undefined;
+  const jobJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description,
+    datePosted: job.postedDate,
+    validThrough: job.deadline,
+    employmentType: job.type === 'walk-in' ? 'CONTRACTOR' : 'FULL_TIME',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.institution,
+      ...(institutionUrl ? { sameAs: institutionUrl } : {}),
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: job.city,
+        addressRegion: job.state,
+        addressCountry: 'IN',
+      },
+    },
+    applicantLocationRequirements: {
+      '@type': 'Country',
+      name: 'India',
+    },
+    directApply: true,
+    url: absoluteUrl(`/jobs/${job.id}`),
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap">
         <Link href="/" className="hover:text-navy-600 transition-colors">Home</Link>
@@ -96,7 +171,7 @@ export default function JobDetailPage({ params }) {
               </div>
               <div>
                 <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">Type</p>
-                <p className="text-sm font-medium text-gray-800 mt-0.5 capitalize">{job.type}</p>
+                <p className="text-sm font-medium text-gray-800 mt-0.5">{normalizeJobType(job.type)}</p>
               </div>
             </div>
           </div>
@@ -152,6 +227,24 @@ export default function JobDetailPage({ params }) {
                     {isDeadlineSoon && !isExpired && <span className="ml-2 text-xs bg-accent-100 text-accent-600 px-2 py-0.5 rounded-full font-bold">Closing Soon</span>}
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-navy-900 p-6 text-white shadow">
+            <h2 className="text-lg font-bold">Why this role stands out</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl bg-white/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-navy-100">Deadline</p>
+                <p className="mt-1 font-bold">{deadline.label}</p>
+              </div>
+              <div className="rounded-xl bg-white/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-navy-100">Compensation</p>
+                <p className="mt-1 font-bold">{job.salary}</p>
+              </div>
+              <div className="rounded-xl bg-white/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-navy-100">Apply via</p>
+                <p className="mt-1 font-bold">{job.contact.email ? 'Direct email' : siteConfig.name}</p>
               </div>
             </div>
           </div>
@@ -243,6 +336,28 @@ export default function JobDetailPage({ params }) {
                 </svg>
                 Back to All Jobs
               </Link>
+            </div>
+
+            <div className="pt-4 mt-4 border-t border-gray-100">
+              <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Share this job</h4>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(absoluteUrl(`/jobs/${job.id}`))}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-navy-50 px-3 py-1.5 text-xs font-bold text-navy-700 hover:bg-navy-100"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(`${job.title} - ${absoluteUrl(`/jobs/${job.id}`)}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-bold text-green-700 hover:bg-green-100"
+                >
+                  WhatsApp
+                </a>
+              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { siteConfig } from '@/lib/site';
 
 const navCategories = [
   { href: '/category/engineering', label: 'Engineering' },
@@ -11,10 +12,23 @@ const navCategories = [
   { href: '/category/school', label: 'School Jobs' },
 ];
 
+const platformLinks = [
+  { href: '/jobs', label: 'All Jobs' },
+  { href: '/network', label: 'Network' },
+  { href: '/reviews', label: 'Reviews' },
+  { href: '/services', label: 'Services' },
+];
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const socialLinks = [
+    ['linkedin', siteConfig.social.linkedin],
+    ['twitter', siteConfig.social.twitter],
+    ['telegram', siteConfig.social.telegram],
+    ['youtube', siteConfig.social.youtube],
+  ];
 
   return (
     <header>
@@ -25,10 +39,13 @@ export default function Header() {
             <Link href="/" className="text-gray-600 hover:text-navy-800">Home</Link>
             <Link href="/about" className="text-gray-600 hover:text-navy-800">About Us</Link>
             <Link href="/contact" className="text-gray-600 hover:text-navy-800">Contact Us</Link>
+            <Link href="/services" className="text-gray-600 hover:text-navy-800">Premium Services</Link>
           </div>
           <div className="flex gap-3">
-            {['linkedin','twitter','telegram','youtube'].map(s => (
-              <a key={s} href="#" className="text-gray-400 hover:text-navy-600 capitalize text-[11px]">{s[0].toUpperCase()}</a>
+            <Link href="/register/candidate" className="text-gray-500 hover:text-navy-700 text-[11px]">Candidate Signup</Link>
+            <Link href="/register/college" className="text-gray-500 hover:text-navy-700 text-[11px]">College Signup</Link>
+            {socialLinks.map(([s, href]) => (
+              <a key={s} href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-navy-600 capitalize text-[11px]" aria-label={`TopFaculty on ${s}`}>{s[0].toUpperCase()}</a>
             ))}
           </div>
         </div>
@@ -47,7 +64,8 @@ export default function Header() {
             </div>
           </Link>
           <div className="hidden md:flex items-center gap-2">
-            <Link href="/admin" className="text-xs bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 font-semibold">Post Your Recruitment</Link>
+            <Link href="/register/candidate" className="text-xs border border-navy-200 text-navy-700 px-4 py-2 rounded-lg hover:bg-navy-50 font-semibold">Join as Faculty</Link>
+            <Link href="/register/college" className="text-xs bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 font-semibold">College Portal</Link>
           </div>
         </div>
       </div>
@@ -57,11 +75,14 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="hidden md:flex">
-              <Link href="/" className="text-white px-4 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all">HOME</Link>
-              {navCategories.map(c => (
-                <Link key={c.href} href={c.href} className="text-white px-4 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all whitespace-nowrap">{c.label.toUpperCase()}</Link>
+              <Link href="/" className="text-white px-3 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all">HOME</Link>
+              {platformLinks.map(c => (
+                <Link key={c.href} href={c.href} className="text-white px-3 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all whitespace-nowrap">{c.label.toUpperCase()}</Link>
               ))}
-              <Link href="/admin" className="text-accent-500 px-4 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all whitespace-nowrap">POST YOUR RECRUITMENT</Link>
+              {navCategories.map(c => (
+                <Link key={c.href} href={c.href} className="text-white px-3 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all whitespace-nowrap">{c.label.toUpperCase()}</Link>
+              ))}
+              <Link href="/admin/jobs/new" className="text-accent-500 px-3 py-3 text-sm font-medium hover:bg-navy-700 border-b-2 border-transparent hover:border-accent-500 transition-all whitespace-nowrap">POST</Link>
             </div>
             <div className="flex items-center gap-2 ml-auto py-2">
               {searchOpen ? (
@@ -82,10 +103,15 @@ export default function Header() {
           {menuOpen && (
             <div className="md:hidden pb-3">
               <Link href="/" className="block text-white px-4 py-2 text-sm hover:bg-navy-700">Home</Link>
+              {platformLinks.map(c => (
+                <Link key={c.href} href={c.href} className="block text-white px-4 py-2 text-sm hover:bg-navy-700">{c.label}</Link>
+              ))}
               {navCategories.map(c => (
                 <Link key={c.href} href={c.href} className="block text-white px-4 py-2 text-sm hover:bg-navy-700">{c.label}</Link>
               ))}
-              <Link href="/admin" className="block text-accent-500 px-4 py-2 text-sm hover:bg-navy-700">Post Your Recruitment</Link>
+              <Link href="/register/candidate" className="block text-white px-4 py-2 text-sm hover:bg-navy-700">Candidate Signup</Link>
+              <Link href="/register/college" className="block text-white px-4 py-2 text-sm hover:bg-navy-700">College Signup</Link>
+              <Link href="/admin/jobs/new" className="block text-accent-500 px-4 py-2 text-sm hover:bg-navy-700">Post Your Recruitment</Link>
             </div>
           )}
         </div>
