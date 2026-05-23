@@ -173,6 +173,126 @@ const jobs = [
     postedDate: '2026-05-19', deadline: '2026-06-30', featured: true,
     contact: { email: 'hr@christuniversity.in', phone: '080-40129100', website: 'www.christuniversity.in' }
   },
+  {
+    id: 16, title: 'Professor in School of Computing - AI, ML, Data Science, Cyber Security, Robotics',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. School of Computing invites applications for Professor roles in CSE specializations including Artificial Intelligence, Machine Learning, Data Science, Cyber Security, and Robotics. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.36 LPA. Higher pay for deserving applicants.', experience: 'Minimum 12 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: true,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 17, title: 'Associate Professor in School of Computing - AI, ML, Data Science, Cyber Security, Robotics',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Associate Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. School of Computing invites applications for Associate Professor roles in CSE specializations including Artificial Intelligence, Machine Learning, Data Science, Cyber Security, and Robotics. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.30 LPA. Higher pay for deserving applicants.', experience: 'Minimum 7 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 18, title: 'Senior Assistant Professor in School of Computing - AI, ML, Data Science, Cyber Security, Robotics',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Assistant Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. School of Computing invites applications for Senior Assistant Professor roles in CSE specializations including Artificial Intelligence, Machine Learning, Data Science, Cyber Security, and Robotics. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.18 LPA. Higher pay for deserving applicants.', experience: 'Minimum 2 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 19, title: 'Assistant Professor with M.Tech Qualification in School of Computing',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Assistant Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. School of Computing invites M.Tech-qualified Assistant Professor applicants in Artificial Intelligence, Machine Learning, Data Science, Cyber Security, and Robotics. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'M.Tech. in appropriate discipline from a reputed university with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.12 LPA. Higher pay for deserving applicants.', experience: 'Minimum 2 years post-M.Tech. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 20, title: 'Professor in Computer Applications',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. MITS invites applications for Professor roles in Computer Applications. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at UG and M.Tech. / M.C.A.',
+    salary: 'As per revised AICTE pay scale, minimum Rs.36 LPA. Higher pay for deserving applicants.', experience: 'Minimum 15 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 21, title: 'Professor in Electronics & Communication Engineering',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. ECE specializations include Signal Processing, Embedded Systems, VLSI Design, and Antenna Microwave. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.30 LPA. Higher pay for deserving applicants.', experience: 'Minimum 12 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 22, title: 'Associate Professor in Electronics & Communication Engineering',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Associate Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. ECE specializations include Signal Processing, Embedded Systems, VLSI Design, and Antenna Microwave. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.28 LPA. Higher pay for deserving applicants.', experience: 'Minimum 7 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 23, title: 'Assistant Professor in Electronics & Communication Engineering',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Assistant Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. ECE specializations include Signal Processing, Embedded Systems, VLSI Design, and Antenna Microwave. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, minimum Rs.12 LPA. Higher pay for deserving applicants.', experience: 'Minimum 3 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 24, title: 'Professor in Electrical & Electronics Engineering',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. EEE specializations include Electrical Vehicle Technology, Control Systems, and Power Systems. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, minimum Rs.30 LPA. Higher pay for deserving applicants.', experience: 'Minimum 12 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 25, title: 'Associate Professor in Electrical & Electronics Engineering',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'engineering', designation: 'Associate Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. EEE specializations include Electrical Vehicle Technology, Control Systems, and Power Systems. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / Foreign University with first class at B.Tech. and M.Tech.',
+    salary: 'As per revised AICTE pay scale, up to Rs.28 LPA. Higher pay for deserving applicants.', experience: 'Minimum 7 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 26, title: 'Professor in Mathematics, Physics, Chemistry or English',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'arts-and-science', designation: 'Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. MITS invites applications for Professor roles in Mathematics, Physics, Chemistry, and English. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIT / NIT / EFLU / Foreign University with first class at UG and PG.',
+    salary: 'As per revised AICTE pay scale, minimum Rs.30 LPA. Higher pay for deserving applicants.', experience: 'Minimum 15 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
+  {
+    id: 27, title: 'Assistant Professor in Management Studies',
+    institution: 'Madanapalle Institute of Technology & Science (MITS)', city: 'Madanapalle', state: 'Andhra Pradesh',
+    category: 'management', designation: 'Assistant Professor', type: 'regular',
+    description: 'Imported from MITS Positions Offered: Faculty Recruitment Drive for Academic Year 2026-27. MITS invites applications for Assistant Professor roles in Management Studies. Source: https://mits.ac.in/positionsoffered',
+    qualifications: 'Ph.D. in appropriate discipline from IIM / IIT / NIT with first class at UG and PG in Management.',
+    salary: 'As per revised AICTE pay scale, minimum Rs.12 LPA. Higher pay for deserving applicants.', experience: 'Minimum 2 years post-Ph.D. experience', vacancies: 1,
+    postedDate: '2026-05-23', deadline: '2026-07-01', featured: false,
+    contact: { email: 'jobs@mits.ac.in', phone: '9100080999 / 9160020744 / 9100973274', website: 'https://mits.ac.in/positionsoffered' }
+  },
 ];
 
 const fdpEvents = [

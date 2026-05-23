@@ -3,11 +3,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { getFdpEvents, getJobs } from './data';
 
+// Guardrail: SQLite on Vercel is ephemeral (/tmp is per-instance and gets
+// wiped on every cold start). If we ever fall back to SQLite in production
+// it silently loses every submission, so fail loudly instead.
+if (process.env.VERCEL && process.env.TOPFACULTY_BACKEND !== 'supabase') {
+  throw new Error(
+    'TopFaculty refuses to boot on Vercel without Supabase. ' +
+      'Set TOPFACULTY_BACKEND=supabase, SUPABASE_URL, and ' +
+      'SUPABASE_SERVICE_ROLE_KEY in the Vercel project settings.',
+  );
+}
+
 const dataDir = path.join(process.cwd(), 'data');
-const defaultDbPath = process.env.VERCEL
-  ? path.join('/tmp', 'topfaculty.sqlite')
-  : path.join(dataDir, 'topfaculty.sqlite');
-const dbPath = process.env.TOPFACULTY_DB_PATH || defaultDbPath;
+const dbPath = process.env.TOPFACULTY_DB_PATH || path.join(dataDir, 'topfaculty.sqlite');
 
 let db;
 
