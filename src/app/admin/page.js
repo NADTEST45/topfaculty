@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const statCards = [
   ['totalJobs', 'Total Jobs', 'bg-navy-700'],
@@ -15,11 +16,12 @@ const statCards = [
 ];
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  async function loadSummary() {
+  const loadSummary = useCallback(async () => {
     setLoading(true);
     setError('');
 
@@ -36,6 +38,15 @@ export default function AdminDashboard() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  async function handleLogout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } finally {
+      router.push('/admin/login');
+      router.refresh();
     }
   }
 
@@ -60,7 +71,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadSummary();
-  }, []);
+  }, [loadSummary]);
 
   const jobs = summary?.jobs || [];
 
@@ -72,9 +83,18 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <p className="mt-1 text-sm text-navy-100">SQLite test backend control panel</p>
           </div>
-          <Link href="/" className="rounded-lg bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20">
-            View Site
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="rounded-lg bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20">
+              View Site
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-lg bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 

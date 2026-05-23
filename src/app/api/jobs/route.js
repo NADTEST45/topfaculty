@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { validateJobSubmission } from '@/lib/validation';
 import { createJobSubmission, deleteJob, getJobById, listJobs, updateJobStatus } from '@/lib/backend';
 
+export const runtime = 'nodejs';
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');

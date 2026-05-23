@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createServiceRequest, getAdminSummary } from '@/lib/backend';
 import { validateServiceRequest } from '@/lib/validation';
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   return NextResponse.json({ serviceRequests: (await getAdminSummary()).recentServiceRequests });
 }

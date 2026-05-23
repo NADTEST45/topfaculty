@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { validateSubscriber } from '@/lib/validation';
 import { upsertSubscriber } from '@/lib/backend';
 
+export const runtime = 'nodejs';
+
 export async function POST(request) {
   try {
     const body = await request.json();

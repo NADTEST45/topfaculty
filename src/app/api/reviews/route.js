@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createReview, getAdminSummary } from '@/lib/backend';
 import { validateReview } from '@/lib/validation';
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   return NextResponse.json({ reviews: (await getAdminSummary()).recentReviews });
 }

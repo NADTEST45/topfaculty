@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createCandidateProfile, getAdminSummary } from '@/lib/backend';
 import { validateCandidateProfile } from '@/lib/validation';
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   return NextResponse.json({ candidates: (await getAdminSummary()).recentCandidates });
 }

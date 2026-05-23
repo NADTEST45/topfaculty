@@ -1,5 +1,16 @@
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const VACANCIES_MAX = 999;
+
+function parseVacancies(input) {
+  const raw = input === '' || input === undefined || input === null ? 1 : input;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return null;
+  if (!Number.isInteger(n)) return null;
+  if (n < 1 || n > VACANCIES_MAX) return null;
+  return n;
+}
+
 export function isValidEmail(email) {
   return emailRegex.test(String(email || '').trim());
 }
@@ -65,7 +76,7 @@ export function validateJobSubmission(payload = {}) {
     qualifications: sanitizeText(payload.qualifications, 1600),
     salary: sanitizeText(payload.salary, 120),
     experience: sanitizeText(payload.experience, 80),
-    vacancies: Number(payload.vacancies || 1),
+    vacancies: parseVacancies(payload.vacancies),
     deadline: sanitizeText(payload.deadline, 30),
     contactEmail: sanitizeText(payload.contactEmail, 254).toLowerCase(),
     contactPhone: sanitizeText(payload.contactPhone, 40),
@@ -80,7 +91,7 @@ export function validateJobSubmission(payload = {}) {
   });
 
   if (!isValidEmail(data.contactEmail)) errors.contactEmail = 'Enter a valid contact email.';
-  if (!Number.isFinite(data.vacancies) || data.vacancies < 1) errors.vacancies = 'Vacancies must be at least 1.';
+  if (data.vacancies === null) errors.vacancies = 'Vacancies must be a whole number between 1 and 999.';
   if (data.deadline && Number.isNaN(new Date(data.deadline).getTime())) errors.deadline = 'Enter a valid deadline.';
 
   return Object.keys(errors).length ? { ok: false, errors } : { ok: true, data };

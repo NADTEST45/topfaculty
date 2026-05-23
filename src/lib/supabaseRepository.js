@@ -139,8 +139,21 @@ function buildJobQuery(filters = {}, options = {}) {
   }
 
   if (filters.search) {
-    const q = String(filters.search).replace(/[(),]/g, ' ');
-    query.set('or', `(title.ilike.*${q}*,institution.ilike.*${q}*,city.ilike.*${q}*,state.ilike.*${q}*,description.ilike.*${q}*,designation.ilike.*${q}*)`);
+    // Escape PostgREST filter specials so a malicious value can't break out
+    // of the OR clause and inject a different predicate. We strip anything
+    // that has meaning to the URL filter grammar — `()` group, `,` separator,
+    // `.` operator delimiter, `:` cast marker, `*` ilike wildcard, plus
+    // whitespace runs that would create empty terms. The remaining text is
+    // wrapped with `*` to keep the substring search behavior.
+    const raw = String(filters.search).slice(0, 100);
+    const q = raw.replace(/[(),.:*"'\\]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (q) {
+      const term = `*${q}*`;
+      query.set(
+        'or',
+        `(title.ilike.${term},institution.ilike.${term},city.ilike.${term},state.ilike.${term},description.ilike.${term},designation.ilike.${term})`,
+      );
+    }
   }
 
   if (options.sort === 'deadline') {

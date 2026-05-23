@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createCollegeProfile, getAdminSummary } from '@/lib/backend';
 import { validateCollegeProfile } from '@/lib/validation';
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   return NextResponse.json({ colleges: (await getAdminSummary()).recentColleges });
 }
