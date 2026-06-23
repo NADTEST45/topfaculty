@@ -11,6 +11,7 @@ export default function NewJobPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [customDesignation, setCustomDesignation] = useState(false);
 
   const [form, setForm] = useState({
     title: '',
@@ -44,6 +45,17 @@ export default function NewJobPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  }
+
+  function handleDesignationSelect(e) {
+    const { value } = e.target;
+    if (value === '__other__') {
+      setCustomDesignation(true);
+      setForm((prev) => ({ ...prev, designation: '' }));
+    } else {
+      setCustomDesignation(false);
+      setForm((prev) => ({ ...prev, designation: value }));
+    }
   }
 
   async function handleSubmit(e) {
@@ -105,6 +117,7 @@ export default function NewJobPage() {
               <button
                 onClick={() => {
                   setSubmitted(false);
+                  setCustomDesignation(false);
                   setForm({
                     title: '', institution: '', city: '', state: '', category: '',
                     designation: '', type: 'regular', description: '', qualifications: '',
@@ -237,16 +250,30 @@ export default function NewJobPage() {
               <select
                 id="designation"
                 name="designation"
-                required
-                value={form.designation}
-                onChange={handleChange}
+                required={!customDesignation}
+                value={customDesignation ? '__other__' : form.designation}
+                onChange={handleDesignationSelect}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none transition bg-white"
               >
                 <option value="">Select Designation</option>
                 {designations.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
+                <option value="__other__">Others (enter manually)</option>
               </select>
+              {customDesignation && (
+                <input
+                  id="designation-custom"
+                  name="designation"
+                  type="text"
+                  required
+                  autoFocus
+                  value={form.designation}
+                  onChange={handleChange}
+                  placeholder="Enter designation manually"
+                  className="mt-2 w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none transition"
+                />
+              )}
             </div>
 
             {/* Type */}
